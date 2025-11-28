@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBAS Global - Abuzar Hasan Sales Calendar Dashboard</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rbas: {
+                            orange: '#FF7A00',
+                            red: '#DC2626',
+                            grey: '#6B7280',
+                            darkBlue: '#1F4E79',
+                            lightGrey: '#E5E7EB',
+                            bg: '#F3F4F6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; margin: 0; padding: 0; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #FF7A00; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #fb6d1c; }
+        .badge { display: inline-block; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; }
+        .badge-sales { background-color: #FEE2E2; color: #991B1B; }
+        .badge-customer { background-color: #FEF3C7; color: #92400E; }
+        .badge-insights { background-color: #E0E7FF; color: #3730A3; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hover-scale { transition: transform 0.2s, box-shadow 0.2s; }
+        .hover-scale:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .code-display { background-color: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-family: monospace; font-size: 0.75rem; line-height: 1.4; max-height: 300px; overflow-y: auto; }
+        .copy-prompt-btn { background-color: #FF7A00; color: white; padding: 0.5rem 0.75rem; border: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .copy-prompt-btn:hover { background-color: #fb6d1c; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const App = () => {
+            const [selectedPost, setSelectedPost] = React.useState(null);
+            const [searchQuery, setSearchQuery] = React.useState('');
+            const [filterObjective, setFilterObjective] = React.useState('');
+            const [activeView, setActiveView] = React.useState('list');
+
+            const posts = [
+                {id: 1, date: "2025-12-01", day: "Monday", time: "09:00", objective: "sales", title: "Why Construction Buyers Choose Equipment from Trusted Suppliers", caption: "After working in B2B equipment sales for over 5 years, I've noticed a clear pattern that separates successful long-term suppliers from one-time vendors. It's not about having the lowest price tag—buyers who scale their operations understand that reliability and vendor credibility are non-negotiable. When contractors purchase equipment, they're not just buying a machine; they're investing in their project timeline, workforce safety, and bottom-line profitability. I've seen deals collapse over minor technical concerns and watched competitors win based purely on established trust. Here's what I've learned: buyers first evaluate supplier track record, then equipment specifications, then pricing. Trusted suppliers win contracts.", hashtags: "#EquipmentSales #B2BSelling #ConstructionBusiness #TrustedSupplier #DealClosure #VendorSelection", cta: "DM me if you're looking for reliable equipment sourcing with proven track records", link: "https://www.rbasglobal.com/contact", imageId: "abuzar-sales-trust-01", imageName: "Premium Construction Equipment Display", imagePrompt: "Hyper-realistic exterior photography of a professional equipment showcase yard featuring premium construction machinery in pristine condition. Multiple brand-new Tata Hitachi excavators, CAT wheel loaders, and Komatsu dozers arranged in perfect rows on polished concrete surface. Equipment painted in professional industrial-orange (#FF7A00) and grey color scheme. Bright midday sunlight creating sharp contrast and emphasizing equipment quality and workmanship. Clean, well-maintained yard with organized stacking of spare parts and components. Professional facility signage visible but text unreadable. Shot on 70mm lens at f/2.8, ISO 100. Shallow depth of field emphasizing equipment details and finish quality. Professional commercial photography. 8K resolution, ultra-detailed, equipment prestige evident.", negativePrompt: "no people or workers visible, no faces, no operator cabs visible, no readable equipment serial numbers, clean equipment surfaces, no excessive weathering, professional showcase condition maintained, no floating objects, equipment dignity preserved", camera: "70mm f/2.8 ISO 100"},
+
+                {id: 2, date: "2025-12-02", day: "Tuesday", time: "10:30", objective: "customer", title: "Customer Success Story: How We Delivered 2500 Units to East African Market", caption: "One of our biggest wins this year came when an East African infrastructure development consortium needed to equip an entire fleet for a massive highway construction project spanning three countries. The challenge was enormous: coordinating procurement of 2500+ equipment units across multiple equipment categories (excavators, loaders, compactors, graders), managing shipping logistics to three separate ports, navigating complex import regulations, and maintaining timeline consistency. What made this unique was the 8-week compressed delivery schedule they insisted on. We leveraged RBAS Global's established relationships with manufacturers, our pre-positioned inventory in regional hubs, and streamlined customs processes we've perfected over years. By maintaining transparent communication, providing daily progress updates, and proactively solving supply chain issues, we not only met their timeline but exceeded quality expectations. This deployment now generates recurring maintenance revenue.", hashtags: "#CustomerSuccess #B2BSuccess #EquipmentDelivery #EastAfrica #FleetExpansion #SalesSuccess #LogisticsExcellence", cta: "Interested in similar scale infrastructure projects? Let's connect and discuss your equipment needs", link: "https://www.rbasglobal.com/contact", imageId: "abuzar-success-story-02", imageName: "Equipment Fleet Delivery Achievement", imagePrompt: "Hyper-realistic aerial photography of a monumental equipment delivery site showing multiple newly delivered construction machines lined in impressive rows. Fleet includes CAT excavators, wheel loaders, motor graders, and compactors—all painted in industrial-orange and grey. Machines positioned at construction project site in African region with clear sky and natural landscape backdrop. Late afternoon golden hour lighting illuminating entire fleet creating dramatic depth and scale. Professional equipment positioning showing readiness for operational deployment. Shot on 50mm lens at f/2.8, ISO 100. Sharp focus on equipment quality and organization, bokeh background of landscape. Warm golden lighting emphasizing achievement scale. 8K resolution, ultra-detailed, fleet deployment authenticity.", negativePrompt: "no people or workers visible, no faces, no readable equipment serial numbers, no operator presence, clean equipment surfaces, no excessive activity, professional delivery condition maintained, no floating equipment, fleet organization preserved", camera: "50mm f/2.8 ISO 100"},
+
+                {id: 3, date: "2025-12-03", day: "Wednesday", time: "02:00", objective: "insights", title: "Market Insight: Why 2025 Will Be the Year of Electrified Equipment", caption: "I've been talking to over 50 contractors across East Africa, West Africa, and the Indian subcontinent throughout Q4 2025, and one unmistakable trend is emerging from every conversation: the seismic shift toward electrified and hybrid construction equipment. The reasons are compelling and multifaceted. First, fuel costs continue rising while battery technology prices drop exponentially—the cost-benefit math flips in 2025. Second, environmental regulations tightening across emerging markets now mandate emission standards that only electrified equipment can meet reliably. Third, operational costs decrease dramatically because electric equipment requires 60% fewer moving parts and minimal maintenance compared to diesel alternatives. Leading manufacturers like Caterpillar, Komatsu, and Volvo are launching electrified product lines specifically targeting emerging markets. The contractors asking about electrified equipment aren't early adopters anymore—they're mainstream buyers making rational ROI calculations. 2025 marks the inflection point.", hashtags: "#MarketInsight #EquipmentTrends #Electrification #GreenConstruction #IndustryShift #2025Predictions #SustainableEquipment", cta: "What trends are you seeing in your region? Share your market observations in the comments", link: "", imageId: "abuzar-insights-trend-03", imageName: "Next-Generation Equipment Technology", imagePrompt: "Hyper-realistic product showcase photography of next-generation electrified construction equipment at modern facility. Display includes battery-powered excavator (Caterpillar or equivalent), electric wheel loader, and hybrid motor grader positioned prominently. Equipment painted in industrial-orange and grey with modern design aesthetics. Advanced charging infrastructure visible in background with electric charging stations and battery storage units. Modern facility with professional lighting emphasizing equipment innovation and technological advancement. Close-up detail shots visible showing electrical connectors, hybrid powertrains, and eco-friendly design elements. Shot on 70mm lens at f/2.8, ISO 100. Sharp focus on equipment technology and innovation, bokeh background of facility. Professional lighting emphasizing modernity. 8K resolution, ultra-detailed, technology innovation evident.", negativePrompt: "no people or workers visible, no faces, no operator presence, no readable brand logos emphasized, clean equipment surfaces, no scattered materials, professional showroom condition, no floating technology elements, equipment focus maintained", camera: "70mm f/2.8 ISO 100"},
+
+                {id: 4, date: "2025-12-04", day: "Thursday", time: "11:00", objective: "sales", title: "Negotiation Tactics That Close Equipment Deals", caption: "After closing 200+ equipment deals worth millions in total contract value, I've identified the most common negotiation mistakes that sabotage otherwise promising equipment sales. Most contractors operate within fixed procurement budgets and rigid timeline requirements—understanding these constraints is your greatest negotiation leverage. The first mistake I see equipment vendors make is leading with price discussions rather than value justification. Smart buyers immediately recognize this as desperation and use it to anchor negotiations downward. The second critical error is failing to quantify total cost of ownership advantages during negotiations—contractors evaluate equipment based on long-term operational expense, not just purchase price. Third, vendors often concede on terms too early without extracting equivalent value concessions. The best negotiation tactic I've deployed: present three well-researched options (premium, mid-tier, budget) with completely transparent pricing, then let buyers self-select. This positions you as consultative, not transactional. When buyers feel like partners in decision-making, they close faster and pay premium prices.", hashtags: "#SalesNegotiation #DealStrategy #EquipmentSales #B2BNegotiation #SalesHacks #ClosingTechniques #NegotiationPsychology", cta: "DM me your toughest negotiation scenario and I'll help you strategize the right approach", link: "", imageId: "abuzar-negotiation-04", imageName: "Equipment Specifications & Technical Documentation", imagePrompt: "Hyper-realistic close-up photography of professional equipment specification documents and technical sheets spread across polished conference table surface. Multiple specification sheets showing excavator, loader, and grader technical drawings with detailed measurements and performance data. Equipment specification documents featuring 3D technical renderings and cross-section diagrams (text unreadable for confidentiality). Comparison matrices showing different equipment models with performance metrics. Professional desk accessories including highlighters, measuring tools, and calculation documents. Conference table surface with polished finish reflecting professional quality. Soft professional lighting creating subtle shadows emphasizing detail documentation. Shot on 85mm macro lens at f/2.8, ISO 100. Extreme sharp focus on technical specifications and drawings, bokeh background of additional documents. Professional lighting emphasizing analytical rigor. 8K resolution, ultra-detailed, technical documentation authenticity.", negativePrompt: "no readable contract terms or sensitive data, no faces or people visible, no names visible on documents, no financial figures visible, avoid cluttered appearance, professional organization evident, no floating documents, clean technical presentation maintained", camera: "85mm f/2.8 ISO 100"},
+
+                {id: 5, date: "2025-12-05", day: "Friday", time: "03:00", objective: "customer", title: "Building Lasting Client Relationships: The RBAS Approach", caption: "B2B equipment sales is fundamentally a relationship business, not a transactional one. The misconception many sales professionals have is that the deal closes when the contract is signed. In reality, that's when the actual relationship begins. I've noticed our most valuable clients—the ones who give us repeat orders and referrals—are those where we've invested heavily in post-sale support and relationship maintenance. At RBAS Global, our approach involves three core components after deal closure. First, we assign dedicated account managers who maintain regular contact to ensure equipment is meeting operational expectations and maintenance schedules are being followed properly. Second, we provide proactive technical support and spare parts availability to minimize equipment downtime, which directly impacts our clients' profitability. Third, we track market developments and pro-actively suggest equipment upgrades or additions aligned with our clients' expanding operations. This ongoing value delivery transforms one-time customers into strategic partners. The contractors who trust us the most are those who've experienced our commitment to their success beyond the initial sale.", hashtags: "#ClientRelationships #B2BRelationships #LongTermValue #CustomerRetention #SalesLeadership #BusinessGrowth #AccountManagement", cta: "How do you nurture client relationships after the initial sale? Share your approach in the comments", link: "", imageId: "abuzar-relationships-05", imageName: "Equipment in Active Operational Use", imagePrompt: "Hyper-realistic outdoor photography of construction equipment in active operational use at ongoing project site. Equipment includes CAT excavator actively excavating red-brown earth, wheel loader moving materials, and compactor leveling ground—all working in coordinated sequence. Equipment maintained in professional condition showing proper care and maintenance. Site showing organized operations with professional safety markers and site management. Early morning or late afternoon light creating warm golden glow across the scene. Rural or industrial construction setting with clear sky. Equipment detail shots visible showing hydraulic systems, tracks, and operational efficiency. Shot on 70mm lens at f/2.8, ISO 100. Sharp focus on equipment operational excellence, bokeh background of site infrastructure. Warm professional lighting emphasizing equipment reliability. 8K resolution, ultra-detailed, operational authenticity.", negativePrompt: "no operator faces visible, no people visible in cabs, no readable site signage, avoid site chaos, organized operations maintained, no excessive dust clouds, equipment condition professional, no floating objects, authentic operational setting preserved", camera: "70mm f/2.8 ISO 100"},
+
+                {id: 6, date: "2025-12-08", day: "Monday", time: "08:30", objective: "insights", title: "The Real Cost of Cheap Equipment: A Contractor's Perspective", caption: "I've watched this scenario play out dozens of times: a contractor saves 20% on initial equipment purchase by selecting a lower-cost alternative, then loses 40% in operational efficiency and downtime costs. The mathematics of total cost of ownership (TCO) is straightforward, yet many equipment buyers ignore it during procurement decisions. Cheap equipment typically has three hidden cost centers that compound over time. First, maintenance costs run 2-3x higher because cost-cutting manufacturers use lower-grade materials and simpler designs that deteriorate faster. Second, fuel efficiency suffers dramatically—budget excavators burn 15-20% more diesel per operational hour compared to premium brands, and over 10,000 operating hours that becomes a massive expense. Third, resale value collapses; when contractors sell used equipment, premium brands retain 45-50% of original value while budget brands drop to 15-20%. Beyond financial costs, equipment reliability directly impacts project timelines and workforce morale. Every hour equipment sits in repair is lost revenue and frustrated workers. I consistently advise clients: calculate your TCO assuming 10,000 operating hours minimum. Premium equipment usually wins decisively on total cost basis. The cheapest equipment is rarely the lowest-cost solution.", hashtags: "#TCO #EquipmentQuality #ConstructionCosts #InvestmentStrategy #BuyerAdvice #CostOfOwnership #SmartProcurement", cta: "Share your most expensive 'cheap equipment' experience or lesson learned", link: "", imageId: "abuzar-tco-analysis-06", imageName: "Equipment Quality Comparison Analysis", imagePrompt: "Hyper-realistic product comparison photography showing premium equipment versus budget alternative side-by-side. Premium CAT excavator positioned next to lower-quality generic excavator revealing stark quality differences. Premium model shows superior build quality, thicker steel, advanced hydraulics, and professional finish. Budget model shows visible wear, lower-quality paint, basic hydraulics, and cost-cutting measures. Both machines photographed in identical lighting to highlight quality contrast. Professional facility background emphasizing quality standards. Close-up details visible showing component quality differences (welds, seals, manufacturing precision). Shot on 70mm lens at f/2.8, ISO 100. Sharp focus on equipment quality comparison, bokeh background of facility. Professional lighting emphasizing quality disparity. 8K resolution, ultra-detailed, quality difference evident.", negativePrompt: "no people visible, no operator presence, no specific brand logos emphasized negatively, avoid bias appearance, professional documentation maintained, no floating equipment, quality comparison maintained fairly, equipment dignity preserved", camera: "70mm f/2.8 ISO 100"},
+
+                {id: 7, date: "2025-12-09", day: "Tuesday", time: "10:00", objective: "sales", title: "The Equipment Buyer's Checklist: What Questions Are You NOT Asking?", caption: "Most equipment procurement managers focus on the obvious evaluation criteria: engine horsepower, bucket capacity, fuel efficiency, and purchase price. These are necessary but insufficient evaluation factors. The sophisticated buyers I work with—the ones who consistently make excellent equipment decisions—ask a different set of strategic questions that separate truly reliable suppliers from mediocre ones. First, they investigate manufacturer warranty coverage specifics: what's actually covered, what's excluded, and how long? Second, they deeply evaluate local dealer support infrastructure: are there service centers within accessible geographic range, do spare parts inventory exist regionally, are technicians properly certified? Third, they analyze operator comfort and safety features systematically because ergonomic equipment increases productivity 15-25% and reduces injury incidents. Fourth, they investigate resale value precedents for that equipment category because residual value impacts true ownership cost. Fifth, they evaluate supply chain stability: can the manufacturer consistently deliver spare parts or are there chronic shortages? Finally, the smartest buyers invest time understanding the supplier's financial stability—equipment suppliers who collapse leave buyers stranded without support. My complete buyer's checklist covers 40+ specific evaluation criteria most procurement professionals never consider. These differentiating factors often matter more than horsepower specifications.", hashtags: "#BuyerGuide #EquipmentProcurement #SmartBuying #DueProcess #EquipmentSelection #B2BProcurement #ProcurementStrategy", cta: "DM me to get access to the complete 40-point equipment buyer's checklist", link: "", imageId: "abuzar-buyers-checklist-07", imageName: "Equipment Evaluation Criteria Framework", imagePrompt: "Hyper-realistic documentation photography of comprehensive equipment evaluation framework displayed professionally. Large presentation board showing equipment selection decision matrix with visual criteria categories: Performance Specifications, Reliability Ratings, Operating Costs, Maintenance Requirements, Dealer Support, and Warranty Coverage. Detailed specification comparison charts showing different excavator models evaluated against key criteria. Professional presentation materials with color-coded evaluation categories (orange #FF7A00 accents for key factors). Visual equipment performance benchmarks shown through charts and comparative analysis. Professional conference room background with presentation displays. Shot on 50mm lens at f/2.8, ISO 200. Sharp focus on evaluation framework and criteria, bokeh background of presentation materials. Professional lighting emphasizing analytical framework. 8K resolution, ultra-detailed, procurement methodology evident.", negativePrompt: "no specific client names, no proprietary evaluation processes disclosed, no faces or people visible, avoid cluttered appearance, professional organization evident, no floating evaluation elements, clean methodology presentation maintained", camera: "50mm f/2.8 ISO 200"},
+
+                {id: 8, date: "2025-12-10", day: "Wednesday", time: "02:30", objective: "customer", title: "5 Reasons Your Equipment Supplier Matters More Than You Think", caption: "Equipment procurement decisions typically focus entirely on the machinery itself—specifications, performance, price. However, I've learned through thousands of contractor conversations that the supplier you choose impacts operational success almost as much as the equipment itself. Here are the five critical reasons why equipment supplier quality matters profoundly. First, supplier financial stability directly impacts spare parts availability; if your supplier goes bankrupt, you inherit inventory challenges and pricing unpredictability. Second, dealer network density determines how quickly you can get technical support and spare parts; a supplier without regional representation means extended equipment downtime. Third, supply chain reliability ensures you can expand your fleet predictably; suppliers with manufacturing stability guarantee delivery schedules while unreliable suppliers disappoint repeatedly. Fourth, supplier relationship quality translates to faster problem resolution; suppliers who treat you as strategic accounts prioritize your issues while transactional suppliers delay indefinitely. Fifth, supplier's training investment in your team significantly impacts equipment longevity; suppliers who provide comprehensive operator and maintenance training programs reduce equipment damage by 25-35%. These supplier-side factors often determine whether your equipment investment succeeds or fails operationally. Choosing the right supplier is as critical as choosing the right equipment.", hashtags: "#SupplierQuality #B2BPartnership #VendorRelationship #SupplierExcellence #TrustedPartner #BusinessRelationships #SupplyChain", cta: "What's your biggest supplier headache? Let's discuss proven solutions", link: "", imageId: "abuzar-supplier-excellence-08", imageName: "Equipment Maintenance & Support Facility", imagePrompt: "Hyper-realistic warehouse and maintenance facility photography showing professional equipment support infrastructure. Modern warehouse showing organized equipment spare parts storage system with labeled bins and organized inventory of hydraulic components, engine parts, and replacement modules. Professional maintenance bays visible with equipment on lifts undergoing service inspections. Welding stations and diagnostic equipment visible in background suggesting full-service capabilities. Clean, organized warehouse aesthetic emphasizing operational excellence and support capacity. Professional lighting and facility design showing commitment to customer support. Equipment diagnostic computers and service documentation organized professionally. Shot on 70mm lens at f/2.8, ISO 100. Sharp focus on equipment spare parts and maintenance infrastructure, bokeh background of workshop operations. Professional lighting emphasizing facility quality. 8K resolution, ultra-detailed, support facility excellence evident.", negativePrompt: "no worker faces visible, no people fully identifiable, no proprietary processes exposed, avoid cluttered warehouse appearance, organized facility presentation, no excessive equipment detail, professional maintenance setting, no floating parts, operational excellence preserved", camera: "70mm f/2.8 ISO 100"},
+
+                {id: 9, date: "2025-12-11", day: "Thursday", time: "09:00", objective: "insights", title: "African Construction Boom: How to Position Your Equipment Business", caption: "Sub-Saharan African infrastructure spending has increased 35% year-over-year, driven by massive development initiatives spanning transportation corridors, power infrastructure, water systems, and telecommunications networks. This represents one of the largest equipment market expansion opportunities globally. The World Bank projects over $500 billion in infrastructure investment across East Africa alone through 2030, creating unprecedented equipment demand. However, successfully capturing this market requires understanding regional nuances that don't apply in developed markets. First, price sensitivity is extreme; contractors operate with tight margins and demand transparent cost structures. Second, equipment financing availability is limited; many buyers need supplier-provided financing terms unavailable in developed markets. Third, local dealer presence is critical; equipment purchased without regional service infrastructure becomes expensive paperweight. Fourth, spare parts availability is make-or-break; supply chain disruptions can strand equipment for months. Fifth, after-sales support consistency matters disproportionately; contractors in remote regions need responsive, reliable support. The most successful equipment suppliers in Africa position themselves as integrated partners providing financing, service infrastructure, and supply chain solutions—not just equipment. Companies who treat Africa as premium market opportunity rather than price-competition dumping ground capture the most valuable contracts. RBAS Global's strategy focuses on establishing regional service hubs, building distributor relationships, and providing creative financing solutions.", hashtags: "#AfricaOpportunity #MarketGrowth #ConstructionBoom #EmergingMarkets #InvestmentOpportunity #BusinessStrategy #InfrastructureExpansion", cta: "Are you capturing the Africa market opportunity? Share your regional strategy", link: "", imageId: "abuzar-africa-opportunity-09", imageName: "Equipment Deployment Across African Region", imagePrompt: "Hyper-realistic geographical market visualization showing equipment distribution across East and West African construction sites. Composite image showing multiple active construction projects featuring RBAS equipment in different African regions. Top image: Large infrastructure project with multiple excavators and loaders actively working. Middle image: Road construction project with motor graders and compactors. Bottom image: Mining operation with heavy equipment in operation. Geographic map overlay showing equipment distribution patterns across sub-Saharan Africa with visual indicators of project locations. Equipment uniformly branded in industrial-orange and grey across all locations. Varied African landscape backgrounds (savanna, construction sites, mining areas) emphasizing geographic expansion. Professional cartographic overlay showing market penetration. Shot on 50mm lens at f/2.8, ISO 100. Sharp focus on equipment visibility across locations, bokeh background of landscape. Professional lighting emphasizing geographic scale. 8K resolution, ultra-detailed, market expansion evident.", negativePrompt: "no people or workers visible, no faces identifiable, no confidential project details, avoid cluttered map appearance, professional geographic visualization maintained, no floating equipment, market scope preserved accurately", camera: "50mm f/2.8 ISO 100"},
+
+                {id: 10, date: "2025-12-12", day: "Friday", time: "04:00", objective: "sales", title: "Pipeline Management for Equipment Sales: The System That Works", caption: "Managing 50+ concurrent equipment deals worth tens of millions in total contract value requires a systematic pipeline management approach that most traditional CRM systems don't adequately support. Early in my sales career, I tried forcing complex equipment deals into generic CRM frameworks and watched deals slip through cracks consistently. Equipment sales pipelines operate differently than typical B2B sales because deal cycles extend 6-12 months, involve multiple stakeholder meetings, require extensive technical evaluation phases, and often depend on customer funding availability. I've developed a specialized pipeline architecture that segments deals across 6 distinct stages: Stage 1 (Lead Qualification) where we evaluate if prospect has genuine funding and timeline, Stage 2 (Technical Specification) where we understand their exact requirements, Stage 3 (Proposal & Pricing) where financial discussions begin, Stage 4 (Negotiation & Contracting) where terms finalize, Stage 5 (Order & Manufacturing) where production commences, Stage 6 (Delivery & Installation) where deals officially close. This system requires daily attention—I personally review 50+ deals daily, identifying bottlenecks and pushing stalled negotiations forward. By maintaining pipeline discipline and understanding which deals need immediate attention versus which are tracking on schedule, I've achieved 89% close rate on my pipeline forecasts. The discipline of regular pipeline reviews prevents surprises and ensures revenue predictability.", hashtags: "#SalesManagement #PipelineManagement #SalesProcess #CRMStrategy #DealManagement #SalesLeadership #RevenueForecasting", cta: "What's your pipeline management system? DM me and let's discuss best practices", link: "", imageId: "abuzar-pipeline-mgmt-10", imageName: "Equipment Sales Pipeline Visualization", imagePrompt: "Hyper-realistic project management visualization showing equipment sales pipeline stages. Large project management board displaying visual pipeline with equipment deals at different closure stages. Visual representation showing Stage 1: Lead Generation (prospect equipment inquiries), Stage 2: Qualification (equipment specifications evaluated), Stage 3: Proposal (equipment pricing and terms), Stage 4: Negotiation (contract discussions), Stage 5: Closure (signed agreements), Stage 6: Delivery (equipment shipment). Multiple equipment product cards visible at different pipeline stages showing deal progression. Color-coded progress indicators showing deal advancement through pipeline stages. Equipment images visible at appropriate stages of pipeline flow. Professional project management aesthetic with clear stage progression visualization. Shot on 50mm lens at f/2.8, ISO 200. Sharp focus on pipeline progression and equipment staging, bokeh background of project board. Professional lighting emphasizing systematic organization. 8K resolution, ultra-detailed, sales process methodology evident.", negativePrompt: "no specific deal values visible, no client names on cards, no sensitive commercial data, avoid cluttered appearance, professional pipeline visualization, no floating pipeline elements, systematic organization preserved", camera: "50mm f/2.8 ISO 200"},
+
+                {id: 11, date: "2025-12-15", day: "Monday", time: "08:00", objective: "customer", title: "Thank You, Best Clients: Celebrating Partnership Success", caption: "I'm genuinely grateful for the partnerships we've built this year with contractors and operators who've challenged us to continuously improve and expand our service capabilities. Success in B2B equipment sales isn't achieved in isolation—it requires clients who trust your recommendations, provide honest feedback about what's working and what needs improvement, and partner with you through complex implementations. This year, several clients stood out for their commitment to excellence and willingness to grow with RBAS Global. They've deployed thousands of equipment units across multiple African countries, expanded their operations systematically, and become true strategic partners rather than transactional customers. These partnerships have driven our business growth, enabled us to establish regional service infrastructure, and created sustainable revenue streams that fund future investments. What makes these partnerships special is mutual investment in success—we're not just selling them equipment, we're helping them build operational capabilities that differentiate their businesses and improve their competitiveness. The opportunity to contribute to their success motivates our entire team. To these partners: thank you for pushing us to be better, for giving us the opportunity to demonstrate our commitment to excellence, and for building something meaningful together. Looking forward to even greater success in 2025.", hashtags: "#ClientAppreciation #PartnershipSuccess #ThankYou #B2BPartnerships #BusinessRelationships #Grateful #StrategicPartnerships", cta: "Tag a partner who's pushed you to excellence—celebrate them publicly", link: "", imageId: "abuzar-client-appreciation-11", imageName: "Successful Equipment Fleet Deployment", imagePrompt: "Hyper-realistic aerial photography of successful equipment fleet deployment at major construction project. Wide aerial view showing multiple RBAS equipment units actively working in coordinated operational sequence at prestigious infrastructure project. Fleet includes excavators, loaders, motor graders, rollers—all performing integrated construction workflow. Equipment positioned strategically showing professional project management and coordination. Project site showing organized operations with clear workflow and minimal downtime. Clear sky and professional lighting conditions revealing equipment operational excellence. Landscape showing significant construction progress demonstrating equipment effectiveness and reliability. Shot on 100mm telephoto lens at f/4, ISO 100. Sharp focus on equipment fleet operational coordination, bokeh background of project landscape. Professional lighting emphasizing operational success. 8K resolution, ultra-detailed, project success evidence.", negativePrompt: "no workers visible in cabs or on ground, no faces identifiable, avoid excessive activity appearance, organized project management evident, clean equipment surfaces, no site chaos, professional operational tone, equipment focus maintained", camera: "100mm f/4 ISO 100"},
+
+                {id: 12, date: "2025-12-16", day: "Tuesday", time: "10:00", objective: "insights", title: "Sales Trends I'm Watching in December: Forecast vs. Reality", caption: "Q4 2025 has been genuinely surprising from a market perspective, and comparing initial forecasts against actual market behavior reveals several important trends I'm watching carefully heading into 2025 planning cycles. First, demand for used equipment has increased 25% beyond forecast because many contractors are testing new markets before committing capital to new equipment purchases. Second, equipment financing inquiries accelerated dramatically in November/December as contractors rushed to deploy capital before year-end accounting close. Third, average deal values actually declined 8-12% even as total equipment volumes increased, suggesting price compression across the market. Fourth, customer requests for electrified equipment jumped to 18% of new inquiries—this is nearly double our September forecast. Fifth, geographic demand patterns shifted unexpectedly; East African markets stayed strong while West African demand softened, contrary to forecast expectations. These trend variations have significant implications for 2025. It means we should expect continued price pressure, accelerating electrification adoption, geographic demand volatility, and financing importance. Successful equipment sales teams will need pricing flexibility, electrified product inventory, geographic market diversification, and creative financing solutions to win in 2025.", hashtags: "#SalesTrends #Q4Forecast #MarketAnalysis #SalesOutlook #IndustryTrends #2025Prep #ForecastAccuracy", cta: "What surprises have you seen in Q4? Share your market observations", link: "", imageId: "abuzar-q4-trends-12", imageName: "Equipment Market Demand Trends", imagePrompt: "Hyper-realistic market analysis visualization showing equipment market trends and demand patterns. Large analytical display showing equipment market data: excavator demand trends (upward trajectory), loader market growth, grader adoption rates, electrification adoption curve, geographic demand distribution. Visual trend charts displaying market analysis with clear upward trends for equipment categories. Regional demand maps showing which equipment types are most sought after in different markets. Market share visualization showing RBAS Global position and competitive landscape. Professional analytics dashboard aesthetic with multiple data visualization formats. Market forecasting graphs showing Q4 and Q1 projections. Shot on 50mm lens at f/2.8, ISO 200. Sharp focus on market trends and data visualization, bokeh background of analytics dashboard. Professional lighting emphasizing data clarity. 8K resolution, ultra-detailed, market intelligence evident.", negativePrompt: "no readable confidential revenue numbers, no specific undisclosed client deals, no proprietary forecasts exposed, avoid cluttered appearance, professional data visualization, no floating trend lines, business confidentiality maintained", camera: "50mm f/2.8 ISO 200"},
+
+                {id: 13, date: "2025-12-18", day: "Thursday", time: "11:30", objective: "sales", title: "5 Equipment Buying Mistakes That Cost Contractors Millions", caption: "I've watched intelligent contractors make these same five critical equipment procurement mistakes repeatedly, and each time the financial consequences are substantial. Understanding these mistakes helps you avoid becoming another cautionary tale. First major mistake: selecting equipment based primarily on lowest purchase price without calculating 10-year total cost of ownership including fuel, maintenance, spare parts, and downtime costs. This single mistake typically costs contractors 30-40% more over equipment lifetime compared to premium equipment selection. Second critical error: underestimating spare parts availability and support network importance during equipment selection process. Contractors who purchase from suppliers lacking regional service infrastructure often experience catastrophic downtime when equipment fails in remote locations. Third expensive mistake: failing to evaluate operator training and safety features adequately, resulting in operator injuries that cost far more than premium safety equipment. Fourth damaging error: purchasing equipment that doesn't match actual job requirements, leading to inefficient operations, accelerated wear, and customer dissatisfaction. Fifth costly mistake: ignoring equipment supplier financial stability, then struggling when suppliers collapse and spare parts become unobtainable. These mistakes compound—a contractor making all five simultaneously loses 50%+ of equipment investment value. I consistently counsel clients on systematic procurement processes that eliminate these recurring mistakes. Most contractors who invest time in proper due diligence achieve equipment selection success.", hashtags: "#AvoidMistakes #BuyingGuidance #ContractorAdvice #EquipmentStrategy #SmartInvesting #LessonLearned #EquipmentProcurement", cta: "What's the biggest equipment buying mistake you've seen? Share your experience", link: "", imageId: "abuzar-buying-mistakes-13", imageName: "Equipment Selection Decision Framework", imagePrompt: "Hyper-realistic educational visualization showing common equipment buying mistakes and solutions. Display board showing 5 critical equipment procurement mistakes: (1) Choosing lowest price over reliability, (2) Ignoring total cost of ownership, (3) Selecting wrong equipment type for application, (4) Insufficient maintenance planning, (5) Poor supplier relationship management. Visual before/after comparison showing correct vs. incorrect equipment choices. Equipment examples showing proper vs. improper selections for specific applications. Cost analysis charts showing financial impact of common mistakes. Professional educational materials with color-coded warning indicators (red for mistakes, green for solutions). Visual consequences displayed showing downtime impacts and financial losses from wrong equipment choices. Shot on 50mm lens at f/2.8, ISO 200. Sharp focus on mistake identification and solutions, bokeh background of educational materials. Professional lighting emphasizing decision framework. 8K resolution, ultra-detailed, educational methodology evident.", negativePrompt: "no specific company examples or client names, no faces or people visible, avoid harsh blame appearance, professional educational tone, balanced mistake analysis, no floating objects, business ethics maintained", camera: "50mm f/2.8 ISO 200"},
+
+                {id: 14, date: "2025-12-19", day: "Friday", time: "03:30", objective: "customer", title: "From Prospect to Partner: One Equipment Deal's Year-Long Journey", caption: "One of our most significant partnerships began as casual inquiry from a West African contractor unsure about equipment sourcing options. This 12-month journey demonstrates the complexity of enterprise equipment deals and why relationship investment separates successful vendors from competitors. Month 1: Initial discovery conversation revealed their vision to expand operations across three countries. They were contemplating purchasing used equipment versus new, and wanted detailed comparisons. Month 2-3: We provided comprehensive equipment specifications, conducted financial analysis comparing options, and introduced them to key stakeholders. They were evaluating multiple suppliers simultaneously. Months 4-5: Price negotiations were intense—they demanded 15% discounts we couldn't justify. Rather than walking away, we restructured the deal offering creative financing and extended payment terms. Months 6-7: We finalized specifications through technical committees and obtained manufacturer commitments for guaranteed delivery dates. Months 8-9: Manufacturing began with weekly progress updates maintaining communication and managing expectations. Month 10: Equipment completed quality inspections and we coordinated complex international shipping arrangements to three separate ports. Month 11-12: Equipment arrived, cleared customs, and we conducted installation and operator training at each location. The 12-month journey transformed a price-conscious prospect into strategic partner who appreciates our comprehensive value delivery. Today they're our largest African client with repeat orders and referrals. Enterprise equipment sales require patience, relationship investment, and commitment to long-term partnership.", hashtags: "#SalesJourney #PartnershipBuilding #CustomerSuccess #Persistence #B2BSuccess #DealClosure #LongTermValue", cta: "Share your longest deal-to-closure journey and what made it successful", link: "https://www.rbasglobal.com/contact", imageId: "abuzar-deal-journey-14", imageName: "Equipment Delivery Progress Timeline", imagePrompt: "Hyper-realistic project timeline visualization showing 12-month equipment acquisition and deployment journey. Visual timeline display showing key project milestones: Month 1 (Equipment Selection), Month 2 (Specification Finalization), Month 3 (Order Placement), Months 4-6 (Manufacturing), Month 7 (Quality Inspection), Month 8 (Shipping Preparation), Month 9 (Ocean Transit), Month 10 (Customs Clearance), Month 11 (On-Site Installation), Month 12 (Operational Deployment). Multiple equipment images visible at appropriate timeline stages. Progressive timeline showing equipment journey from selection through operational deployment. Professional project management timeline visualization. Milestones marked with completion indicators and status updates. Location mapping showing shipping routes and delivery stages. Shot on 35mm lens at f/2.8, ISO 200. Sharp focus on timeline progression and equipment stages, bokeh background of project board. Professional lighting emphasizing journey narrative. 8K resolution, ultra-detailed, project journey documentation.", negativePrompt: "no specific financial terms visible, no client identifiable details, no sensitive communications exposed, avoid cluttered timeline, professional documentation maintained, no floating timeline elements, business confidentiality preserved", camera: "35mm f/2.8 ISO 200"},
+
+                {id: 15, date: "2025-12-22", day: "Monday", time: "09:00", objective: "insights", title: "Year-End Reflection: What Equipment Sales Taught Me in 2024", caption: "Closing 200+ equipment deals throughout 2024 has been incredibly educational and has reshaped how I approach equipment sales fundamentally. The experience has taught me five unexpected lessons that challenge conventional sales wisdom. First lesson: price isn't the primary objection in equipment sales—capacity and risk are. Contractors would rather pay premium prices for equipment they trust than save money on equipment they doubt. This fundamentally changes negotiation strategy; instead of defending prices, I focus on demonstrating reliability and risk mitigation. Second surprising lesson: relationship depth matters exponentially more than I initially understood. Deals close based on trust in the supplier relationship, not just equipment specifications. Sales professionals who invest in genuine relationships win contracts against lower-priced competitors. Third important lesson: transparency builds competitive advantage. Contractors appreciate honesty about equipment limitations and realistic expectations far more than overselling and over-promising. Fourth crucial insight: listening to contractor problems reveals sales opportunities; listening to their frustrations reveals partnership opportunities. The contractors I've built strongest relationships with are those where I've genuinely understood their operational challenges and positioned equipment as solutions. Fifth valuable lesson: equipment sales is ultimately about helping contractors succeed operationally. When I shifted from 'selling equipment' to 'helping contractors expand their capabilities,' deal quality and customer satisfaction improved dramatically. These lessons will guide my 2025 strategy.", hashtags: "#YearEndReflection #LessonsLearned #SalesInsights #BusinessReflection #CareerLessons #2025Ready #PersonalGrowth", cta: "What business lessons defined your 2024? Share your reflections", link: "", imageId: "abuzar-yearend-reflection-15", imageName: "Equipment Fleet Success Showcase", imagePrompt: "Hyper-realistic equipment showcase photography displaying year-end business achievement display. Professional equipment showroom or yard featuring fleet of successfully delivered equipment throughout 2024. Multiple equipment units representing different categories: excavators, loaders, graders, compactors—all maintained in pristine condition. Equipment showcasing positioned to emphasize scale and achievement. Professional facility backdrop suggesting established operations and business success. Professional signage and achievement markers visible. Sunset or golden hour lighting creating warm, reflective atmosphere. Fleet arrangement creating visual narrative of 2024 successes. Shot on 50mm lens at f/2.8, ISO 100. Sharp focus on equipment fleet showcase, bokeh background of facility. Warm reflective lighting emphasizing business growth and achievement. 8K resolution, ultra-detailed, business success visualization.", negativePrompt: "no people or workers visible, no faces identifiable, no specific deal amounts visible on signage, avoid excessive celebration appearance, professional showcase tone, clean equipment presentation, no floating objects, business dignity maintained", camera: "50mm f/2.8 ISO 100"},
+
+                {id: 16, date: "2025-12-23", day: "Tuesday", time: "10:30", objective: "customer", title: "Building the Future of Equipment Partnerships: What's Next", caption: "Looking ahead to 2025 and beyond, the equipment industry landscape is transforming fundamentally, and I'm excited about the partnership opportunities this creates. Three major industry shifts are reshaping how equipment suppliers and contractors will operate together. First transformation: electrification isn't a niche trend anymore; it's becoming mainstream business necessity. Contractors globally will demand electrified equipment options, forcing suppliers to maintain diverse product portfolios. Second major shift: digitalization and IoT connectivity are becoming standard expectations. Contractors increasingly expect real-time equipment diagnostics, predictive maintenance data, and operational analytics—suppliers providing superior digital capabilities win business. Third important evolution: sustainability isn't optional anymore; environmental regulations tightening globally mean suppliers unable to meet emission standards lose market access. RBAS Global's 2025 strategy focuses on these three pillars. We're expanding electrified equipment offerings significantly, investing in IoT-enabled diagnostic systems to provide contractors superior operational intelligence, and implementing sustainability initiatives throughout our supply chain. Simultaneously, we're deepening partnerships with contractors who share commitment to innovation and sustainable practices. The future belongs to suppliers who evolve faster than market demands, listen to contractor needs obsessively, and deliver comprehensive solutions beyond just equipment. I'm genuinely optimistic about building something transformational together in 2025.", hashtags: "#FutureOfSales #IndustryEvolution #Innovation #B2BFuture #SupplierStrategy #2025Vision #SustainableBusiness", cta: "What changes are you expecting in 2025? Let's discuss and prepare together", link: "https://www.rbasglobal.com/contact", imageId: "abuzar-future-vision-16", imageName: "Next-Generation Equipment Facility", imagePrompt: "Hyper-realistic modern equipment facility photography showcasing next-generation equipment and operational infrastructure. State-of-the-art facility displaying cutting-edge equipment: electrified excavators, AI-diagnostic loaders, IoT-enabled motor graders, and autonomous compactors. Advanced facility design showing future-ready equipment storage and maintenance infrastructure. Solar panels and sustainable energy systems visible on facility. Modern diagnostic center with equipment monitoring stations. Battery charging infrastructure for electric equipment. Equipment testing grounds for new technology validation. Professional facility design emphasizing technological advancement and sustainability commitment. Shot on 50mm lens at f/2.8, ISO 200. Sharp focus on next-generation equipment showcase, bokeh background of facility infrastructure. Professional lighting emphasizing innovation. 8K resolution, ultra-detailed, future-focused vision.", negativePrompt: "no specific prototypes or confidential technologies overly exposed, no patent information visible, no people working visible, avoid overly futuristic unrealistic appearance, professional business tone, clean facility presentation, no floating technology elements, business authenticity maintained", camera: "50mm f/2.8 ISO 200"}
+            ];
+
+            const getObjectiveBadge = (objective) => {
+                const badges = {
+                    'sales': 'badge-sales',
+                    'customer': 'badge-customer',
+                    'insights': 'badge-insights'
+                };
+                return badges[objective] || '';
+            };
+
+            const getObjectiveEmoji = (objective) => {
+                const emojis = {
+                    'sales': '💼',
+                    'customer': '🤝',
+                    'insights': '📊'
+                };
+                return emojis[objective] || '';
+            };
+
+            const filteredPosts = posts.filter(post => {
+                const matchSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                   post.caption.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchFilter = !filterObjective || post.objective === filterObjective;
+                return matchSearch && matchFilter;
+            });
+
+            const groupByWeek = (postsArray) => {
+                const weeks = [[], [], [], []];
+                postsArray.forEach((post, idx) => {
+                    const week = Math.floor(idx / 4);
+                    if (week < 4) weeks[week].push(post);
+                });
+                return weeks;
+            };
+
+            const weeks = groupByWeek(posts);
+
+            const copyPromptToClipboard = (text) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('✅ Prompt copied to clipboard!');
+                }).catch(() => {
+                    alert('❌ Failed to copy prompt');
+                });
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+                    {/* Header */}
+                    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-rbas-orange to-rbas-red rounded-lg flex items-center justify-center text-white font-bold text-xl">⚙️</div>
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-gray-900">⚙️ RBAS Global - Sales Division</h1>
+                                        <p className="text-sm text-gray-500">🛠️ Abuzar Hasan - Equipment-Focused Sales Calendar</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-lg font-semibold text-gray-900">📅 December 2025</p>
+                                    <p className="text-xs text-gray-500">📊 16 Posts • 4 Weeks • Equipment Focus</p>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+                        {/* Search */}
+                        <div className="mb-6">
+                            <input 
+                                type="text" 
+                                placeholder="🔎 Search posts by title or topic..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rbas-orange focus:border-transparent"
+                            />
+                        </div>
+
+                        {/* Filters */}
+                        <div className="flex flex-wrap gap-2 mb-8">
+                            <button 
+                                onClick={() => setFilterObjective('')}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition hover-scale"
+                            >
+                                📋 All Posts ({posts.length})
+                            </button>
+                            <button 
+                                onClick={() => setFilterObjective('sales')}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-red-50 cursor-pointer transition hover-scale"
+                            >
+                                💼 Sales (6)
+                            </button>
+                            <button 
+                                onClick={() => setFilterObjective('customer')}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-yellow-50 cursor-pointer transition hover-scale"
+                            >
+                                🤝 Customer (5)
+                            </button>
+                            <button 
+                                onClick={() => setFilterObjective('insights')}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-indigo-50 cursor-pointer transition hover-scale"
+                            >
+                                📊 Insights (5)
+                            </button>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex gap-0 mb-6 border-b border-gray-200 flex-wrap">
+                            <button 
+                                onClick={() => setActiveView('list')}
+                                className={`px-4 py-3 font-medium cursor-pointer transition ${activeView === 'list' ? 'border-b-2 border-rbas-orange text-rbas-orange' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                📝 List View
+                            </button>
+                            <button 
+                                onClick={() => setActiveView('calendar')}
+                                className={`px-4 py-3 font-medium cursor-pointer transition ${activeView === 'calendar' ? 'border-b-2 border-rbas-orange text-rbas-orange' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                📅 Calendar
+                            </button>
+                            <button 
+                                onClick={() => setActiveView('images')}
+                                className={`px-4 py-3 font-medium cursor-pointer transition ${activeView === 'images' ? 'border-b-2 border-rbas-orange text-rbas-orange' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                🎨 Image Prompts
+                            </button>
+                            <button 
+                                onClick={() => setActiveView('stats')}
+                                className={`px-4 py-3 font-medium cursor-pointer transition ${activeView === 'stats' ? 'border-b-2 border-rbas-orange text-rbas-orange' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                📈 Analytics
+                            </button>
+                        </div>
+
+                        {/* List View */}
+                        {activeView === 'list' && (
+                            <div className="space-y-4 fade-in">
+                                {filteredPosts.length === 0 ? (
+                                    <div className="text-center py-8">
+                                        <p className="text-gray-500">🔍 No posts found matching your criteria</p>
+                                    </div>
+                                ) : (
+                                    filteredPosts.map(post => (
+                                        <div 
+                                            key={post.id}
+                                            onClick={() => setSelectedPost(post)}
+                                            className="bg-white border border-gray-200 rounded-lg p-6 hover-scale cursor-pointer"
+                                        >
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <p className="text-xs text-gray-500 mb-1">📆 {post.date} • {post.day}</p>
+                                                    <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
+                                                </div>
+                                                <span className={`badge ${getObjectiveBadge(post.objective)}`}>{getObjectiveEmoji(post.objective)} {post.objective}</span>
+                                            </div>
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-4">{post.caption}</p>
+                                            <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                                                <div className="text-xs text-gray-600">
+                                                    <span className="font-semibold text-rbas-orange">⏰ {post.time} IST</span>
+                                                </div>
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedPost(post); }} className="text-rbas-orange hover:text-rbas-red font-medium text-sm cursor-pointer">👁️ View Details →</button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* Calendar View */}
+                        {activeView === 'calendar' && (
+                            <div className="space-y-6 fade-in">
+                                {weeks.map((week, wIdx) => (
+                                    <div key={wIdx} className="bg-white border border-gray-200 rounded-lg p-6">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-4">📆 Week {wIdx + 1}</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {week.map(post => (
+                                                <div 
+                                                    key={post.id}
+                                                    onClick={() => setSelectedPost(post)}
+                                                    className="border border-gray-300 rounded-lg p-4 hover-scale cursor-pointer"
+                                                >
+                                                    <p className="text-xs font-semibold text-rbas-orange mb-2">📅 {post.date}</p>
+                                                    <p className="text-sm font-medium text-gray-900 mb-3 line-clamp-2">{post.title}</p>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-xs font-semibold text-gray-600">⏰ {post.time} IST</span>
+                                                        <span className={`badge ${getObjectiveBadge(post.objective)}`}>{getObjectiveEmoji(post.objective)}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Image Prompts View */}
+                        {activeView === 'images' && (
+                            <div className="space-y-4 fade-in">
+                                {posts.map(post => (
+                                    <div 
+                                        key={post.id}
+                                        onClick={() => setSelectedPost(post)}
+                                        className="bg-white border border-gray-200 rounded-lg p-6 hover-scale cursor-pointer"
+                                    >
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">🎨 {post.date} • {post.imageName}</p>
+                                                <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
+                                            </div>
+                                            <span className={`badge ${getObjectiveBadge(post.objective)}`}>{getObjectiveEmoji(post.objective)}</span>
+                                        </div>
+                                        <p className="text-gray-600 text-sm mb-3 line-clamp-3">{post.imagePrompt}</p>
+                                        <div className="flex justify-between items-center text-xs text-gray-600 flex-wrap gap-2">
+                                            <span className="bg-rbas-orange/10 text-rbas-orange px-2 py-1 rounded">📷 {post.camera}</span>
+                                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">🆔 {post.imageId}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Analytics View */}
+                        {activeView === 'stats' && (
+                            <div className="space-y-6 fade-in">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                                        <p className="text-sm text-gray-600 mb-2">📄 Total Posts</p>
+                                        <p className="text-4xl font-bold text-gray-900">16</p>
+                                    </div>
+                                    <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+                                        <p className="text-sm text-red-700 mb-2">💼 Sales Posts</p>
+                                        <p className="text-4xl font-bold text-red-900">6</p>
+                                    </div>
+                                    <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                                        <p className="text-sm text-yellow-700 mb-2">🤝 Customer Posts</p>
+                                        <p className="text-4xl font-bold text-yellow-900">5</p>
+                                    </div>
+                                    <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                                        <p className="text-sm text-indigo-700 mb-2">📊 Insights Posts</p>
+                                        <p className="text-4xl font-bold text-indigo-900">5</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Posts by Day</h3>
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between"><span>🅼 Monday</span><span className="font-semibold text-rbas-orange">3 posts</span></div>
+                                            <div className="flex justify-between"><span>🇹 Tuesday</span><span className="font-semibold text-rbas-orange">3 posts</span></div>
+                                            <div className="flex justify-between"><span>🅦 Wednesday</span><span className="font-semibold text-rbas-orange">2 posts</span></div>
+                                            <div className="flex justify-between"><span>🇹 Thursday</span><span className="font-semibold text-rbas-orange">4 posts</span></div>
+                                            <div className="flex justify-between"><span>🅵 Friday</span><span className="font-semibold text-rbas-orange">4 posts</span></div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🎨 Image Focus Areas</h3>
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between"><span>⚙️ Equipment Showcase</span><span className="font-semibold">6 posts</span></div>
+                                            <div className="flex justify-between"><span>🏗️ Operational Use</span><span className="font-semibold">5 posts</span></div>
+                                            <div className="flex justify-between"><span>📊 Market Data</span><span className="font-semibold">5 posts</span></div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Content Strategy</h3>
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between"><span>💼 Sales Techniques</span><span className="font-semibold">6 posts</span></div>
+                                            <div className="flex justify-between"><span>🤝 Client Relations</span><span className="font-semibold">5 posts</span></div>
+                                            <div className="flex justify-between"><span>📊 Market Analysis</span><span className="font-semibold">5 posts</span></div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🌍 Focus Markets</h3>
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between"><span>🌍 Africa Focus</span><span className="font-semibold">5 posts</span></div>
+                                            <div className="flex justify-between"><span>🌏 Global Markets</span><span className="font-semibold">6 posts</span></div>
+                                            <div className="flex justify-between"><span>🇮🇳 India Operations</span><span className="font-semibold">5 posts</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Modal */}
+                    {selectedPost && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 fade-in">
+                            <div className="bg-white rounded-lg max-w-3xl w-full max-h-[95vh] overflow-y-auto custom-scrollbar">
+                                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                                    <h2 className="text-xl font-bold text-gray-900">📌 {selectedPost.title}</h2>
+                                    <button onClick={() => setSelectedPost(null)} className="text-gray-500 hover:text-gray-700 text-2xl font-light cursor-pointer">✕</button>
+                                </div>
+                                <div className="px-6 py-6 space-y-6">
+                                    <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                        <div><p className="text-xs text-gray-500">📅 Date</p><p className="font-semibold text-gray-900">{selectedPost.date}</p></div>
+                                        <div><p className="text-xs text-gray-500">📍 Day</p><p className="font-semibold text-gray-900">{selectedPost.day}</p></div>
+                                        <div><p className="text-xs text-gray-500">⏰ Time</p><p className="font-semibold text-rbas-orange">{selectedPost.time} IST</p></div>
+                                        <div><p className="text-xs text-gray-500">🎯 Type</p><p className="font-semibold capitalize">{selectedPost.objective}</p></div>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 mb-2">📝 Full Caption</p>
+                                        <p className="text-sm text-gray-900 leading-relaxed">{selectedPost.caption}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 mb-2">🏷️ Hashtags</p>
+                                        <p className="text-sm text-rbas-orange">{selectedPost.hashtags}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 mb-2">💬 Call-to-Action</p>
+                                        <p className="text-sm text-gray-900">{selectedPost.cta}</p>
+                                    </div>
+                                    {selectedPost.link && (
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-2">🔗 Link</p>
+                                            <a href={selectedPost.link} target="_blank" rel="noopener noreferrer" className="text-rbas-orange hover:underline text-sm">{selectedPost.link}</a>
+                                        </div>
+                                    )}
+                                    <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                                        <p className="text-xs text-orange-700 mb-3 font-semibold">🖼️ Image Details (Equipment-Focused)</p>
+                                        <p className="text-xs text-orange-900 mb-2"><strong>📌 Name:</strong> {selectedPost.imageName}</p>
+                                        <p className="text-xs text-orange-900 mb-2"><strong>🆔 ID:</strong> {selectedPost.imageId}</p>
+                                        <p className="text-xs text-orange-900 mb-3"><strong>📷 Camera:</strong> {selectedPost.camera}</p>
+                                        <div className="mb-3">
+                                            <p className="text-xs font-semibold text-orange-900 mb-2">✍️ Hyper-Realistic Prompt (No People/Faces):</p>
+                                            <div className="code-display">{selectedPost.imagePrompt}</div>
+                                            <button 
+                                                onClick={() => copyPromptToClipboard(selectedPost.imagePrompt)}
+                                                className="copy-prompt-btn mt-2 w-full"
+                                            >
+                                                📋 Copy Prompt to Clipboard
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-semibold text-orange-900 mb-2">❌ Negative Prompt:</p>
+                                            <div className="code-display">{selectedPost.negativePrompt}</div>
+                                            <button 
+                                                onClick={() => copyPromptToClipboard(selectedPost.negativePrompt)}
+                                                className="copy-prompt-btn mt-2 w-full"
+                                            >
+                                                📋 Copy Negative Prompt
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
